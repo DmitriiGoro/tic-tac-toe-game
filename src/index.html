@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Крестики-нолики</title>
+    <link rel="stylesheet" href="./assets/styles/style.css" />
+    <link rel="stylesheet" href="./assets/styles/style.css" />
+  </head>
+  <body>
+    <h1>Крестики-нолики</h1>
+    <!-- игровое поле -->
+    <table id="gamefield">
+      <!-- каждая клетка — ячейка таблицы -->
+      <tr>
+        <td class="cell" id="0"></td>
+        <td class="cell" id="1"></td>
+        <td class="cell" id="2"></td>
+      </tr>
+      <tr>
+        <td class="cell" id="3"></td>
+        <td class="cell" id="4"></td>
+        <td class="cell" id="5"></td>
+      </tr>
+      <tr>
+        <td class="cell" id="6"></td>
+        <td class="cell" id="7"></td>
+        <td class="cell" id="8"></td>
+      </tr>
+    </table>
+    <div class="radio__wrapper">
+      <input type="radio" value="1" name="players" id="1_player" checked />
+      <label for="1_player">1 игрок</label>
+      <label for="difficulty" class="difficulty-select"
+        >Уровень сложности
+        <select name="difficulty" id="difficult">
+          <option value="easy">Легкий</option>
+          <option value="hard">Сложный</option>
+        </select>
+      </label>
+      <input type="radio" value="2" name="players" id="2_player" />
+      <label for="2_player">2 игрока</label>
+    </div>
+    <button class="button">Начать</button>
+    <button class="button button_continue">Продолжить</button>
+    <div class="endgame"><div class="text"></div></div>
+    <!-- <div class="side"></div>
+    <div class="radio__wrapper radio__wrapper_side">
+      <h3>Выберите сторону</h3>
+      <div class="labels__wrapper">
+        <label for="X"
+          >Х
+          <input type="radio" value="X" name="side" id="X" />
+        </label>
+        <label for="O"
+          >О
+          <input type="radio" value="O" name="side" id="O" />
+        </label>
+      </div>
+      <button class="button button_modal">OK</button>
+    </div> -->
+
+    <script type="module">
+      import { checkWinner } from "./js/checkWinner.js";
+      import { gameForTwo } from "./js/gameForTwo.js";
+      import { gameForOne } from "./js/gameForOne.js";
+
+      const button = document.body.querySelector(".button");
+      const continueButton = document.body.querySelector(".button_continue");
+
+      const sideModal = document.body.querySelector(".side");
+
+      if (!window.localStorage.getItem("lastGame")) {
+        continueButton.style.display = "none";
+      }
+
+      const continueLastGame = (event) => {
+        const lastGameBoard = window.localStorage.getItem("lastGame");
+        const lastCount = window.localStorage.getItem("lastCount");
+
+        if (!lastGameBoard) {
+          return;
+        }
+        gameForOne(null, true);
+        gameForTwo(JSON.parse(lastGameBoard), lastCount);
+      };
+
+      const startGame = (event) => {
+        const isOnePlayer = document.body.querySelector("[value='1']").checked;
+        const isTwoPlayers = document.body.querySelector("[value='2']").checked;
+        const select = document.body.querySelector("#difficult");
+
+        if (!event.target.dataset.start) {
+          event.target.innerHTML = "Заново";
+          event.target.setAttribute("data-start", true);
+        } else {
+          window.localStorage.removeItem("lastGame");
+        }
+
+        if (isTwoPlayers) {
+          gameForOne(null, true);
+
+          gameForTwo();
+        }
+
+        if (isOnePlayer) {
+          const difficulty = select.value;
+          gameForTwo(null, 0, true);
+          gameForOne(difficulty);
+        }
+      };
+
+      button.addEventListener("click", startGame);
+      continueButton.addEventListener("click", continueLastGame);
+    </script>
+  </body>
+</html>
